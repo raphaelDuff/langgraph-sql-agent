@@ -2,10 +2,10 @@ from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import BaseMessage
 from langchain_core.prompts import ChatPromptTemplate
 from franq_agent.utils.state import AgentState, DataVizType, QuestionType
-from franq_agent.utils.db import execute_query, format_schema, get_schema
+from franq_agent.utils.db import execute_query, get_schema
 from typing import Any
 import json
-from utils import strip_code_fence
+from franq_agent.utils.utils import strip_code_fence
 
 
 llm = ChatAnthropic(
@@ -119,15 +119,14 @@ def schema_discovery(state: AgentState) -> AgentState:
 def plan_query(state: AgentState) -> AgentState:
     """Creates a reasoning plan before generating SQL."""
     question = state.get("resolved_question") or state["question"]
-    schema: dict[str, list[dict[str, Any]]] = state.get("schema") or {}
-    schema_text = format_schema(schema)
+    schema = json.dumps(state.get("schema") or {}, indent=2)
 
     prompt = ChatPromptTemplate.from_messages(
         [
             (
                 "system",
                 """You are a senior data analyst. Plan how to answer business questions using a database.
-
+Verify the categorical_columns and the values to match the words before creating the SQL query.
 Always respond with ONLY valid JSON, no markdown, with this structure:
 {{
   "steps": ["list of reasoning steps"],
@@ -145,7 +144,7 @@ Question: {question}""",
         ]
     )
 
-    response = llm.invoke(prompt.format_messages(schema=schema_text, question=question))
+    response = llm.invoke(prompt.format_messages(schema=schema, question=question))
     content = strip_code_fence(str(response.content))
 
     try:
@@ -160,8 +159,7 @@ Question: {question}""",
 def generate_sql(state: AgentState) -> AgentState:
     """Generates a SQLite SELECT query from the plan."""
     question = state.get("resolved_question") or state["question"]
-    schema: dict[str, list[dict[str, Any]]] = state.get("schema") or {}
-    schema_text = format_schema(schema)
+    schema = json.dumps(state.get("schema") or {}, indent=2)
     plan = state.get("plan") or {}
 
     prompt = ChatPromptTemplate.from_messages(
@@ -173,7 +171,6 @@ def generate_sql(state: AgentState) -> AgentState:
 Rules:
 - Only SELECT statements (no writes)
 - All column/table names must exist in the schema provided
-- Verify the categorical_columns and the values to match the words before filtering the data
 - Use proper SQLite date functions where needed (strftime, date, etc.)
 - Return ONLY the SQL query, no explanation, no markdown""",
             ),
@@ -192,7 +189,7 @@ Question: {question}""",
 
     response = llm.invoke(
         prompt.format_messages(
-            schema=schema_text, plan=json.dumps(plan), question=question
+            schema=schema, plan=json.dumps(plan), question=question
         )
     )
 
@@ -240,8 +237,7 @@ def execute_sql(state: AgentState) -> AgentState:
 def repair_sql(state: AgentState) -> AgentState:
     """Asks the LLM to fix the broken SQL using the error message as feedback."""
     question = state.get("resolved_question") or state["question"]
-    schema: dict[str, list[dict[str, Any]]] = state.get("schema") or {}
-    schema_text = format_schema(schema)
+    schema = json.dumps(state.get("schema") or {}, indent=2)
     failed_sql = state.get("sql_query") or state.get("last_sql_query") or ""
     error = state.get("execution_error") or "Unknown error"
 
@@ -270,7 +266,7 @@ Error:
 
     response = llm.invoke(
         prompt.format_messages(
-            schema=schema_text, question=question, sql=failed_sql, error=error
+            schema=schema, question=question, sql=failed_sql, error=error
         )
     )
 

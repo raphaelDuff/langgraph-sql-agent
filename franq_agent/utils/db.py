@@ -2,7 +2,8 @@ from sqlalchemy import create_engine, text, inspect
 from typing import Any
 import os
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "anexo_desafio_1.db")
+DB_NAME = os.environ["DB_NAME"]
+DB_PATH = os.path.join(os.path.dirname(__file__), "..", "..", DB_NAME)
 DATABASE_URL = f"sqlite:///{DB_PATH}"
 
 engine = create_engine(DATABASE_URL)
@@ -94,14 +95,3 @@ def execute_query(sql: str) -> list[dict[str, Any]]:
     with engine.connect() as conn:
         result = conn.execute(text(sql))
         return [dict(row._mapping) for row in result.fetchall()]
-
-
-def format_schema(schema: dict[str, list[dict[str, Any]]]) -> str:
-    lines = []
-    for table, columns in schema.items():
-        col_defs = ", ".join(
-            f"{col['name']} ({col['type']})" + (" PK" if col.get("pk") else "")
-            for col in columns
-        )
-        lines.append(f"  {table}({col_defs})")
-    return "\n".join(lines)

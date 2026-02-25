@@ -43,9 +43,6 @@ class AgentState(_AgentStateRequired, total=False):
     execution_error: Optional[str]
     repair_attempts: int
 
-    # Interpretation
-    last_result_summary: Optional[str]
-
     # Visualization
     data_viz_type: Optional[DataVizType]
 
