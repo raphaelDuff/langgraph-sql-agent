@@ -87,3 +87,21 @@ def get_schema() -> dict[str, Any]:
             schema[table] = table_info
 
     return schema
+
+
+def execute_query(sql: str) -> list[dict[str, Any]]:
+    """Execute a SQL query and return results as a list of dicts."""
+    with engine.connect() as conn:
+        result = conn.execute(text(sql))
+        return [dict(row._mapping) for row in result.fetchall()]
+
+
+def format_schema(schema: dict[str, list[dict[str, Any]]]) -> str:
+    lines = []
+    for table, columns in schema.items():
+        col_defs = ", ".join(
+            f"{col['name']} ({col['type']})" + (" PK" if col.get("pk") else "")
+            for col in columns
+        )
+        lines.append(f"  {table}({col_defs})")
+    return "\n".join(lines)
