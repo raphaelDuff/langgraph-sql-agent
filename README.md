@@ -98,7 +98,7 @@ Primeiramente, eu fiz o seguinte esboço no caderno e discuti a viabilidade do p
 
 <img src="images/esboco_graph.jpeg" width="50%" alt="Rascunho do Grafo">
 
-Após a discussão estratégica, o nó de recuperação automática dos erros também foi adicionado ao grafo.
+Após a discussão estratégica, o nó de recuperação automática dos erros também foi adicionado ao grafo. Essa base foi definida:
 
 - **Arquitetura sequencial com nó de classificação:** o nó `classify` avalia se a pergunta requer acesso ao banco antes de acionar todo o pipeline de SQL. Perguntas diretas (saudações, perguntas sobre o próprio agente) são respondidas imediatamente pelo nó `finalize`, evitando latência e custo desnecessários.
 
