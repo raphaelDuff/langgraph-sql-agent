@@ -116,7 +116,7 @@ Estrutura de pastas sugerida pela documentação oficial do LangChain: [File Str
 
 #### Revisão do MVP e Melhorias
 
-Com o primeiro MVP, fui revisando todo o código, adicionando melhorias, removendo complexidade desnecessárias e mudando algumas escolhas arquiteturaism, por exemplo:
+Com o primeiro MVP, fui revisando todo o código, adicionando melhorias, removendo complexidade desnecessárias e mudando algumas escolhas arquiteturais, por exemplo:
 
 - **Tipagem modernizada:** substituição de `List` e `Dict` do módulo `typing` pelas classes base nativas `list` e `dict`.
 
