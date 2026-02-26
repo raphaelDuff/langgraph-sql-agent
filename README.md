@@ -183,10 +183,16 @@ LANGSMITH_PROJECT=franq-agent
 
 - **Migrar para execução assíncrona:** refatorar o código para usar `ainvoke` e chamadas assíncronas ao longo de todo o grafo, melhorando a escalabilidade e a responsividade da interface.
 
-- **Integrar com FastAPI:** expor o agente como uma API REST via FastAPI, permitindo integração com outros sistemas e frontends além do Streamlit.
+- **Integrar com FastAPI:** expor o agente como uma API REST via FastAPI, permitindo integração com outros sistemas e frontends além do Streamlit. Para escalabilidade e boa arquitetura, pode ser usado como base esse meu projeto que segue as práticas de DDD: https://github.com/raphaelDuff/samizdat . Como referência usei esse livro> [Clean Architecture with Python: Implement scalable and maintainable applications using proven architectural principles (English Edition)](https://www.amazon.com.br/gp/product/B0F6C97JWL)
 
 - **Migrar a descoberta de schema para função serverless e uso de cache:** mover `schema_discovery` para uma função Lambda (ou equivalente) executada periodicamente. Armazenar o schema em cache de longo prazo (ex.: Redis) e eliminar a necessidade de consultar o banco a cada invocação.
 
-- **Mehorar a visualização de dados:** para a pergunta "Qual a tendência de reclamações por canal no último ano?" o gráfico escolhido poderia ser um gráfico de pilhas para uma melhor visualização. Colocar uma lista de exemplo no prompt (FEW-SHOT examples) com a relação de perguntas por tipo de gráfico poderia melhorar o sistema.
+- **Mehorar a visualização de dados:** para a pergunta "Qual a tendência de reclamações por canal no último ano?" o gráfico escolhido poderia ser um gráfico de pilhas para melhorar a visualização. Como melhoria é possível colocar uma lista de exemplos no prompt (FEW-SHOT examples) com a relação de perguntas por tipo de gráfico poderia melhorar o sistema.
+
+- **Juntar nós:** podemos ver na imagem do LangSmith que a execução está demorando em vários nós. Caso a lógica de alguns nós fossem combinadas, poderia melhorar essa performance. Junto com o time, teríamos que discutir o quanto isso vale a pena em detrimento do Single Responsibility Principle.
+
+- **Testar system prompts diferentes:** reescrever tanto os system prompts quanto o user prompt nos nós para ver se conseguimos "enxugar" o número de token para economizar sem perder qualidade.
+
+- **Adicionar métricas ao agente:** estruturar o projeto para termos métricas de relevância de resposta (ResponseRelevancy()) e se é consistente Faithfulness() usando a biblioteca ragas(). Para isso seria necessário preparar um banco de dados com perguntas e respostas de teste para avaliação do agente.
 
 - **Adicionar um RAG de planos de ação:** criar uma base de conhecimento (RAG) com orientações e planos de ação associados a padrões identificados nos dados. Por exemplo: se reclamações por canal estiverem aumentando, o agente consultaria o RAG para sugerir ações corretivas ao usuário.
