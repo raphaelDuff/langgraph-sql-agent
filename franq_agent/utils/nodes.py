@@ -188,9 +188,7 @@ Question: {question}""",
     )
 
     response = llm.invoke(
-        prompt.format_messages(
-            schema=schema, plan=json.dumps(plan), question=question
-        )
+        prompt.format_messages(schema=schema, plan=json.dumps(plan), question=question)
     )
 
     state["sql_query"] = strip_code_fence(str(response.content))

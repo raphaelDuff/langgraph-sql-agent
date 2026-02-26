@@ -1,4 +1,4 @@
-# Franq Data Assistant
+# Dr. Frankstein Data Assistant
 
 Agente conversacional de análise de dados que responde perguntas em linguagem natural sobre um banco de dados SQLite. O agente utiliza **Claude Sonnet** como LLM, **LangGraph** para orquestração do fluxo de nós e **Streamlit** como interface web.
 
@@ -61,9 +61,6 @@ uv sync
 
 # Interface web
 uv run streamlit run app.py
-
-# Ou via linha de comando (REPL interativo)
-uv run main.py
 ```
 
 ---

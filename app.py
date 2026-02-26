@@ -10,16 +10,14 @@ from langchain_core.runnables import RunnableConfig
 
 from franq_agent.graph import build_graph
 
-# ─── Page config ──────────────────────────────────────────────────────────────
 
-st.set_page_config(page_title="Franq Data Assistant", page_icon="📊", layout="wide")
-st.title("📊 Franq Data Assistant")
-st.caption(
-    "Ask business questions in plain language — I'll query the database and explain the results."
+st.set_page_config(
+    page_title="Dr. Frankstein - Data Assistant", page_icon="🧟", layout="wide"
 )
-
-
-# ─── Chart renderer ───────────────────────────────────────────────────────────
+st.title("🧟 Dr. Frankstein - Data Assistant")
+st.caption(
+    "**F**ramework for **R**easoning and **A**nalytics using **N**atural **K**nowledge from **S**tructured **T**ables with **E**xplainable **I**nsights **N**arratively"
+)
 
 
 def _render_chart(
@@ -46,8 +44,6 @@ def _render_chart(
         st.dataframe(df, use_container_width=True)
 
 
-# ─── Session state ────────────────────────────────────────────────────────────
-
 if "graph" not in st.session_state:
     st.session_state.graph = build_graph()
 
@@ -57,7 +53,6 @@ if "thread_id" not in st.session_state:
 if "history" not in st.session_state:
     st.session_state.history = []
 
-# ─── Chat display ─────────────────────────────────────────────────────────────
 
 for turn in st.session_state.history:
     with st.chat_message("user"):
@@ -78,7 +73,6 @@ for turn in st.session_state.history:
             df = pd.DataFrame(data)
             _render_chart(df, viz_type, turn["question"], viz_config)
 
-# ─── Input ────────────────────────────────────────────────────────────────────
 
 question = st.chat_input("Ask a question about the data…")
 
@@ -88,7 +82,9 @@ if question:
 
     with st.chat_message("assistant"):
         with st.spinner("Thinking…"):
-            config = RunnableConfig(configurable={"thread_id": st.session_state.thread_id})
+            config = RunnableConfig(
+                configurable={"thread_id": st.session_state.thread_id}
+            )
             result = st.session_state.graph.invoke(
                 {"question": question}, config=config
             )
