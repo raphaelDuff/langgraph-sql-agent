@@ -1,5 +1,7 @@
 # Dr. Frankstein Data Assistant
 
+![Dr. Frankstein Data Assistant](images/question_1.png)
+
 Agente conversacional de análise de dados que responde perguntas em linguagem natural sobre um banco de dados SQLite. O agente utiliza **Claude Sonnet** como LLM, **LangGraph** para orquestração do fluxo de nós e **Streamlit** como interface web.
 
 O usuário digita uma pergunta de negócio, o agente decide se é necessário consultar o banco, gera e executa SQL com recuperação automática de erros, e devolve uma resposta em linguagem natural acompanhada de visualização interativa via Plotly.
@@ -69,7 +71,7 @@ uv run streamlit run app.py
 
 ### Fluxo geral
 
-![Fluxo do agente](graph.png)
+![Fluxo do agente](images/graph.png)
 
 ### Nós do grafo
 
@@ -100,10 +102,24 @@ uv run streamlit run app.py
 ## Exemplos de Consultas Testadas
 
 - "Liste os 5 estados com maior número de clientes que compraram via app em maio."
+
+  ![question 1](images/question_1.png)
+
 - "Quantos clientes interagiram com campanhas de WhatsApp em 2024?"
+
+  ![question 2](images/question_2.png)
+
 - "Quais categorias de produto tiveram o maior número de compras em média por cliente?"
+
+  ![question 3](images/question_3.png)
+
 - "Qual o número de reclamações não resolvidas por canal?"
+
+  ![question 4](images/question_4.png)
+
 - "Qual a tendência de reclamações por canal no último ano?"
+
+  ![question 5](images/question_5.png)
 
 ---
 
