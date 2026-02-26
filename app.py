@@ -22,22 +22,24 @@ st.caption(
 # ─── Chart renderer ───────────────────────────────────────────────────────────
 
 
-def _render_chart(df: pd.DataFrame, viz_type: str, title: str) -> None:
-    cols = df.columns.tolist()
+def _render_chart(
+    df: pd.DataFrame, viz_type: str, title: str, viz_config: dict | None
+) -> None:
+    cfg = viz_config or {}
 
     if viz_type == "table":
         st.dataframe(df, use_container_width=True)
 
-    elif viz_type == "bar" and len(cols) >= 2:
-        fig = px.bar(df, x=cols[0], y=cols[1], title=title)
+    elif viz_type == "bar" and cfg.get("x") and cfg.get("y"):
+        fig = px.bar(df, x=cfg["x"], y=cfg["y"], color=cfg.get("color"), title=title)
         st.plotly_chart(fig, use_container_width=True)
 
-    elif viz_type == "line" and len(cols) >= 2:
-        fig = px.line(df, x=cols[0], y=cols[1], title=title)
+    elif viz_type == "line" and cfg.get("x") and cfg.get("y"):
+        fig = px.line(df, x=cfg["x"], y=cfg["y"], color=cfg.get("color"), title=title)
         st.plotly_chart(fig, use_container_width=True)
 
-    elif viz_type == "pie" and len(cols) >= 2:
-        fig = px.pie(df, names=cols[0], values=cols[1], title=title)
+    elif viz_type == "pie" and cfg.get("x") and cfg.get("y"):
+        fig = px.pie(df, names=cfg["x"], values=cfg["y"], title=title)
         st.plotly_chart(fig, use_container_width=True)
 
     else:
@@ -53,8 +55,6 @@ if "thread_id" not in st.session_state:
     st.session_state.thread_id = "streamlit-session"
 
 if "history" not in st.session_state:
-    # Each entry: {"question": str, "answer": str, "sql": str|None,
-    #              "viz_type": str|None, "data": list|None}
     st.session_state.history = []
 
 # ─── Chat display ─────────────────────────────────────────────────────────────
@@ -71,11 +71,12 @@ for turn in st.session_state.history:
                 st.code(turn["sql"], language="sql")
 
         data = turn.get("data")
-        viz_type = turn.get("viz_type")
+        viz_type = turn.get("data_viz_type")
+        viz_config = turn.get("viz_config")
 
         if data and viz_type and viz_type != "none":
             df = pd.DataFrame(data)
-            _render_chart(df, viz_type, turn["question"])
+            _render_chart(df, viz_type, turn["question"], viz_config)
 
 # ─── Input ────────────────────────────────────────────────────────────────────
 
@@ -95,6 +96,7 @@ if question:
         answer = result.get("final_answer", "No answer generated.")
         sql = result.get("last_sql_query")
         data_viz_type = result.get("data_viz_type")
+        viz_config = result.get("viz_config")
         data = result.get("query_result") or []
 
         st.write(answer)
@@ -105,7 +107,7 @@ if question:
 
         if data and data_viz_type and data_viz_type != "none":
             df = pd.DataFrame(data)
-            _render_chart(df, data_viz_type, question)
+            _render_chart(df, data_viz_type, question, viz_config)
 
     st.session_state.history.append(
         {
@@ -113,6 +115,7 @@ if question:
             "answer": answer,
             "sql": sql,
             "data_viz_type": data_viz_type,
+            "viz_config": viz_config,
             "data": data,
         }
     )

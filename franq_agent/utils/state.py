@@ -45,6 +45,7 @@ class AgentState(_AgentStateRequired, total=False):
 
     # Visualization
     data_viz_type: Optional[DataVizType]
+    viz_config: Optional[dict[str, str]]
 
     # Final output
     final_answer: Optional[str]

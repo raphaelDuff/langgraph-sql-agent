@@ -326,9 +326,14 @@ def finalize_answer(state: AgentState) -> AgentState:
    - "line"  → time series / trends (date column + numeric column)
    - "pie"   → proportions with ≤8 categories (2 columns only)
    - "none"  → single scalar value
+3. For bar, line, and pie, provide viz_config specifying which result columns map to chart axes:
+   - "x"     → column for the x-axis (bar/line) or category names (pie)
+   - "y"     → column for the y-axis (bar/line) or numeric values (pie)
+   - "color" → (optional) column used to split series by color/group
 
 Always respond with valid JSON only, no markdown:
-{{"answer": "...", "viz_type": "table|bar|line|pie|none"}}""",
+{{"answer": "...", "viz_type": "table|bar|line|pie|none", "viz_config": {{"x": "col", "y": "col", "color": "col_or_null"}}}}
+Omit viz_config for viz_type "table" or "none".""",
                 ),
                 (
                     "human",
@@ -363,9 +368,11 @@ Results ({total_rows} rows total, showing up to 50):
                 )
             except ValueError:
                 state["data_viz_type"] = DataVizType.TABLE
+            state["viz_config"] = parsed.get("viz_config") or None
         except json.JSONDecodeError:
             final_answer = raw.strip()
             state["data_viz_type"] = DataVizType.TABLE
+            state["viz_config"] = None
 
     state["final_answer"] = final_answer
     existing: list[dict[str, str]] = state.get("messages") or []
