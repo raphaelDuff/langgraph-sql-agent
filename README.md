@@ -27,10 +27,6 @@ O usuário digita uma pergunta de negócio, o agente decide se é necessário co
 
 ### 1. Configurar variáveis de ambiente
 
-```bash
-cp .env.example .env
-```
-
 Edite o arquivo `.env` e preencha os valores:
 
 ```env
